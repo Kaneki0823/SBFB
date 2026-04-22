@@ -1,30 +1,43 @@
-// 🎯 LISTS
-const HEROES = [/* keep your list unchanged */ "Miya","Karina","Harith","Masha","Aulus","Julian","Saber","Minotaur","Khufra","Gloo","Xavier","Freddrin","Hayabusa","Roger","Gusion","Esmeralda","Barats","Valentina","Cyclops","Pharsa","Hanabi","Yu Zhong","Terry Bogart","Floryn","Rafaela","Ruby","Lesley","Ling","Edith","Chou","Lancelot","Valir","Benedetta"];
+// 🎯 DATA
+const HEROES = [
+  "Miya","Karina","Harith","Masha","Aulus","Julian","Saber","Minotaur",
+  "Khufra","Gloo","Xavier","Freddrin","Hayabusa","Roger","Gusion",
+  "Esmeralda","Barats","Valentina","Cyclops","Pharsa","Hanabi",
+  "Yu Zhong","Terry Bogart","Floryn","Rafaela","Ruby","Lesley",
+  "Ling","Edith","Chou","Lancelot","Valir","Benedetta"
+];
 
-const ITEMS = [/* keep your list unchanged */ "Blade of Despair","Demon Hunter Sword","Sea Halberd","Golden Staff","Berserker's Fury","Haas's Claws","War Axe","Enchanted Talisman","Feather of Heaven","Glowing Wand","Ice Queen Wand","Holy Crystal","Blade Armor","Guardian Helmet","Antique Cuirass","Brute Force Breastplate","Oracle","Dominance Ice","Ancient Wrath(Tuant)","Winter Crown","Feline Blade(PUSA)","Purple Buff","Claude's Theft Device"];
+const ITEMS = [
+  "Blade of Despair","Demon Hunter Sword","Sea Halberd","Golden Staff",
+  "Berserker's Fury","Haas's Claws","War Axe","Enchanted Talisman",
+  "Feather of Heaven","Glowing Wand","Ice Queen Wand","Holy Crystal",
+  "Blade Armor","Guardian Helmet","Antique Cuirass",
+  "Brute Force Breastplate","Oracle","Dominance Ice",
+  "Winter Crown","Purple Buff","Claude's Theft Device"
+];
 
-// 📦 DATA
+// 📦 STATE
 let players = JSON.parse(localStorage.getItem("players")) || [];
 
-// 💾 SAVE
 function save() {
   localStorage.setItem("players", JSON.stringify(players));
 }
 
+//
 // ➕ OPEN FORM
+//
 function openForm(index = null) {
-  const form = document.getElementById("formContainer");
   const p = players[index];
 
-  form.innerHTML = `
+  document.getElementById("formContainer").innerHTML = `
     <div class="card">
       <input id="name" placeholder="Name" value="${p?.name || ""}">
-      <input id="bet" type="number" placeholder="Bet" value="${p?.bet || ""}">
+      <input id="bet" type="number" placeholder="Bet" value="${p?.bet || 0}">
 
-      ${createRound(1,p)}
-      ${createRound(2,p)}
-      ${createRound(3,p)}
-      ${createRound(4,p)}
+      ${roundUI(1,p)}
+      ${roundUI(2,p)}
+      ${roundUI(3,p)}
+      ${roundUI(4,p)}
 
       <button onclick="savePlayer(${index})">💾 Save</button>
       <button onclick="closeForm()">❌ Cancel</button>
@@ -32,8 +45,7 @@ function openForm(index = null) {
   `;
 }
 
-// 🎯 ROUND UI
-function createRound(n,p){
+function roundUI(n,p){
   return `
     <b>Round ${n}</b>
 
@@ -47,24 +59,25 @@ function createRound(n,p){
   `;
 }
 
-// ❌ CLOSE
 function closeForm(){
   document.getElementById("formContainer").innerHTML="";
 }
 
-// 💾 SAVE PLAYER (FIXED)
+//
+// 💾 SAVE + AUTO MINIMIZE
+//
 function savePlayer(index){
-  const form = document.getElementById("formContainer");
+  const f = document.getElementById("formContainer");
 
   const player = {
-    name: form.querySelector("#name").value.trim(),
-    bet: Number(form.querySelector("#bet").value || 0),
+    name: f.querySelector("#name").value.trim(),
+    bet: Number(f.querySelector("#bet").value || 0),
 
     rounds: [
-      [form.querySelector(".r1h").value, form.querySelector(".r1i").value],
-      [form.querySelector(".r2h").value, form.querySelector(".r2i").value],
-      [form.querySelector(".r3h").value, form.querySelector(".r3i").value],
-      [form.querySelector(".r4h").value, form.querySelector(".r4i").value]
+      [f.querySelector(".r1h").value,f.querySelector(".r1i").value],
+      [f.querySelector(".r2h").value,f.querySelector(".r2i").value],
+      [f.querySelector(".r3h").value,f.querySelector(".r3i").value],
+      [f.querySelector(".r4h").value,f.querySelector(".r4i").value]
     ],
 
     marks: [[0,0],[0,0],[0,0],[0,0]]
@@ -72,23 +85,21 @@ function savePlayer(index){
 
   if(!player.name) return alert("Enter name");
 
-  if(index != null) players[index] = player;
+  if(index!=null) players[index]=player;
   else players.push(player);
 
   save();
-  closeForm();
+
+  // ✨ MINIMIZE FEEDBACK
+  f.innerHTML = `<div class="card">✅ Saved!</div>`;
+  setTimeout(()=>closeForm(),800);
+
   renderAll();
 }
 
-// 📦 RENDER ALL (IMPORTANT FIX)
-function renderAll(){
-  renderPlayers();
-  updatePot();
-  updateScores();
-  renderCheckerPanel();
-}
-
-// 👥 PLAYERS
+//
+// 📦 MAIN RENDER
+//
 function renderPlayers(){
   const c = document.getElementById("playersContainer");
   c.innerHTML="";
@@ -105,9 +116,8 @@ function renderPlayers(){
     p.rounds.forEach((r,ri)=>{
       html += `
         <div>Round ${ri+1}</div>
-
-        <div class="guess">${r[0]}</div>
-        <div class="guess">${r[1]}</div>
+        <div>${r[0]}</div>
+        <div>${r[1]}</div>
       `;
     });
 
@@ -116,21 +126,24 @@ function renderPlayers(){
   });
 }
 
-// 🗑 REMOVE
 function removePlayer(i){
-  if(!confirm("Remove player?")) return;
+  if(!confirm("Remove?")) return;
   players.splice(i,1);
   save();
   renderAll();
 }
 
+//
 // 💰 POT
+//
 function updatePot(){
-  const el = document.getElementById("pot");
-  el.innerText = players.reduce((a,p)=>a+(p.bet||0),0);
+  document.getElementById("pot").innerText =
+    players.reduce((a,p)=>a+(p.bet||0),0);
 }
 
+//
 // 🏆 SCORES
+//
 function updateScores(){
   const table = document.getElementById("scoreTable");
 
@@ -155,31 +168,70 @@ function updateScores(){
   });
 }
 
-// 🎯 CHECKER PANEL (FIXED)
+//
+// 🎯 CLICKABLE CHECKER (NEW UPGRADE)
+//
 function renderCheckerPanel(){
   const el = document.getElementById("checkerPanel");
 
-  let rounds=[[],[],[],[]];
+  let rounds = [new Map(),new Map(),new Map(),new Map()];
 
   players.forEach(p=>{
     p.rounds.forEach((r,i)=>{
       r.forEach(g=>{
-        if(g && !rounds[i].includes(g)) rounds[i].push(g);
+        if(!g) return;
+        if(!rounds[i].has(g)) rounds[i].set(g,{yes:0,no:0});
       });
     });
   });
 
-  let html=`<div class="card">`;
+  let html = `<div class="card"><h2>🎯 Checker Panel</h2>`;
 
-  rounds.forEach((r,i)=>{
-    html+=`<h3>Round ${i+1}</h3>`;
-    r.forEach(g=>{
-      html+=`<div>${g}</div>`;
+  rounds.forEach((map,i)=>{
+    html += `<h3>Round ${i+1}</h3>`;
+
+    map.forEach((v,name)=>{
+      html += `
+        <div class="guess">
+          <span>${name}</span>
+
+          <button onclick="checkMark('${name}',${i},1)">✔</button>
+          <button onclick="checkMark('${name}',${i},-1)">✖</button>
+        </div>
+      `;
     });
   });
 
-  el.innerHTML=html+"</div>";
+  el.innerHTML = html+"</div>";
 }
 
-// 🔄 INIT
+//
+// ✔✖ CHECK MARK (NEW)
+//
+function checkMark(value,round,state){
+  players.forEach(p=>{
+    p.rounds.forEach((r,i)=>{
+      r.forEach((g,gi)=>{
+        if(g===value){
+          p.marks[round][gi]=state;
+        }
+      });
+    });
+  });
+
+  save();
+  renderAll();
+}
+
+//
+// 🔄 MASTER RENDER
+//
+function renderAll(){
+  renderPlayers();
+  updatePot();
+  updateScores();
+  renderCheckerPanel();
+}
+
+// 🚀 INIT
 renderAll();
