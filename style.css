@@ -1,43 +1,183 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial;
-  background: #111;
-  color: white;
+  margin: 0;
   padding: 20px;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #1a1a1a, #0d0d0d);
+  color: #fff;
 }
 
-button {
-  margin: 5px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.card {
-  background: #1e1e1e;
-  padding: 10px;
+/* TITLES */
+h1, h2, h3 {
+  text-align: center;
   margin: 10px 0;
-  border-radius: 10px;
+  color: #f1f1f1;
 }
 
-input, select {
-  display: block;
-  margin: 5px 0;
-  padding: 6px;
-  width: 220px;
+/* BUTTONS */
+button {
+  padding: 8px 12px;
+  margin: 4px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* PRIMARY BUTTON */
+button:first-of-type {
+  background: #2ecc71;
+  color: white;
+}
+
+/* CARD DESIGN */
+.card {
+  background: linear-gradient(145deg, #1f1f1f, #161616);
+  border: 1px solid #2a2a2a;
+  padding: 15px;
+  margin: 12px auto;
+  border-radius: 14px;
+  max-width: 520px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+/* INPUTS */
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #2b2b2b;
+  color: white;
+  outline: none;
+}
+
+/* ========================= */
+/* 🎯 CHECKER PANEL FIX */
+/* ========================= */
 
 .guess {
-  display: flex;
-  justify-content: space-between;
-  margin: 3px 0;
+  display: grid;
+  grid-template-columns: 1fr 40px 40px;
+  align-items: center;
+  gap: 8px;
+
+  background: #252525;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 10px;
+  border: 1px solid #333;
 }
+
+/* TEXT INSIDE CHECKER */
+.guess span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
+/* ✔ BUTTON */
+.guess button:nth-of-type(1) {
+  background: #2ecc71;
+  color: white;
+  border-radius: 6px;
+}
+
+/* ✖ BUTTON */
+.guess button:nth-of-type(2) {
+  background: #e74c3c;
+  color: white;
+  border-radius: 6px;
+}
+
+/* ========================= */
+/* PLAYER CARD IMPROVE */
+/* ========================= */
+
+.card b {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+/* ROUND TEXT */
+.card div {
+  margin: 3px 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* ========================= */
+/* TABLE */
+/* ========================= */
 
 table {
   width: 100%;
-  margin-top: 10px;
+  max-width: 600px;
+  margin: auto;
+  border-collapse: collapse;
+  background: #1a1a1a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th {
+  background: #2c2c2c;
 }
 
 td, th {
-  padding: 6px;
+  padding: 10px;
+  text-align: center;
   border-bottom: 1px solid #333;
+}
+
+/* ========================= */
+/* POT DISPLAY */
+/* ========================= */
+
+#pot, #winnerPot {
+  color: #f1c40f;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* ========================= */
+/* FORM CENTER */
+/* ========================= */
+
+#formContainer {
+  display: flex;
+  justify-content: center;
+}
+
+/* ========================= */
+/* MOBILE FIX */
+/* ========================= */
+
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .guess {
+    grid-template-columns: 1fr 40px 40px;
+  }
 }
