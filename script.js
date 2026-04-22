@@ -86,36 +86,38 @@ window.closeForm = function(){
 // ===============================
 // 💾 SAVE PLAYER (FIXED)
 // ===============================
-window.savePlayer = async function(index){
+window.savePlayer = async function(index) {
 
   const f = document.getElementById("formContainer");
 
   const player = {
     name: f.querySelector("#name").value.trim(),
     bet: Number(f.querySelector("#bet").value || 0),
-
     rounds: [
       [f.querySelector(".r1h").value, f.querySelector(".r1i").value],
       [f.querySelector(".r2h").value, f.querySelector(".r2i").value],
       [f.querySelector(".r3h").value, f.querySelector(".r3i").value],
       [f.querySelector(".r4h").value, f.querySelector(".r4i").value]
     ],
-
     marks: [[0,0],[0,0],[0,0],[0,0]]
   };
 
-  if(!player.name) return alert("Enter name");
+  if (!player.name) return alert("Enter name");
 
-  if(index !== null){
-    players[index] = player;
+  // SAFELY rebuild from current memory
+  let updated = players ? [...players] : [];
+
+  if (index != null) {
+    updated[index] = player;
   } else {
-    players.push(player);
+    updated.push(player);
   }
 
-  await set(playersRef, players);
+  // FORCE SYNC
+  await set(playersRef, updated);
+
   closeForm();
 };
-
 // ===============================
 // 🗑 REMOVE PLAYER
 // ===============================
