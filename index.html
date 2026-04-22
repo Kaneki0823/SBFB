@@ -2,47 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MCGG Fate Box</title>
+  <title>MCGG Fate Box Game</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- 🔥 Prevent JS load issues -->
-  <style>
-    body { font-family: Arial; }
-  </style>
 </head>
 
 <body>
 
-<h1>🎮 MCGG SB FB</h1>
+<h1>🎮 MCGG Fate Box Game</h1>
 
-<!-- 🎯 Checker Panel -->
 <div id="checkerPanel"></div>
 
-<!-- ➕ Add Player -->
 <button onclick="openForm()">➕ Add Player</button>
 
-<!-- 🧾 Form -->
 <div id="formContainer"></div>
-
-<hr>
 
 <h2>👥 Players</h2>
 <div id="playersContainer"></div>
 
-<hr>
-
 <h2>📊 Scoreboard</h2>
 <table id="scoreTable"></table>
-
-<hr>
 
 <h2>💰 Total Pot: <span id="pot">0</span></h2>
 <h2>🏆 Winner Gets: <span id="winnerPot">0</span></h2>
 
 <button onclick="resetGame()">🔄 Reset Game</button>
 
-<!-- ⚠️ IMPORTANT: defer prevents undefined functions -->
-<script src="script.js" defer></script>
+<script src="script.js"></script>
 
 </body>
 </html>
