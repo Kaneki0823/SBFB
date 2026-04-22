@@ -1,10 +1,10 @@
-// 🎯 DATA
+// 🎯 HEROES + ITEMS
 const HEROES = [
   "Miya","Karina","Harith","Masha","Aulus","Julian","Saber","Minotaur",
   "Khufra","Gloo","Xavier","Freddrin","Hayabusa","Roger","Gusion",
   "Esmeralda","Barats","Valentina","Cyclops","Pharsa","Hanabi",
-  "Yu Zhong","Terry Bogart","Floryn","Rafaela","Ruby","Lesley",
-  "Ling","Edith","Chou","Lancelot","Valir","Benedetta"
+  "Yu Zhong","Floryn","Rafaela","Ruby","Lesley","Ling","Edith",
+  "Chou","Lancelot","Valir","Benedetta"
 ];
 
 const ITEMS = [
@@ -16,21 +16,25 @@ const ITEMS = [
   "Winter Crown","Purple Buff","Claude's Theft Device"
 ];
 
-// 📦 STATE
+// 📦 DATA
 let players = JSON.parse(localStorage.getItem("players")) || [];
 
+// 💾 SAVE LOCAL
 function save() {
   localStorage.setItem("players", JSON.stringify(players));
 }
 
-//
+//////////////////////////////////////////////////////
 // ➕ OPEN FORM
-//
+//////////////////////////////////////////////////////
+
 function openForm(index = null) {
   const p = players[index];
 
   document.getElementById("formContainer").innerHTML = `
     <div class="card">
+      <h3>${index == null ? "➕ Add Player" : "✏️ Edit Player"}</h3>
+
       <input id="name" placeholder="Name" value="${p?.name || ""}">
       <input id="bet" type="number" placeholder="Bet" value="${p?.bet || 0}">
 
@@ -39,11 +43,15 @@ function openForm(index = null) {
       ${roundUI(3,p)}
       ${roundUI(4,p)}
 
-      <button onclick="savePlayer(${index})">💾 Save</button>
+      <button onclick="savePlayer(${index ?? 'null'})">💾 Save Player</button>
       <button onclick="closeForm()">❌ Cancel</button>
     </div>
   `;
 }
+
+//////////////////////////////////////////////////////
+// 🎯 ROUND UI
+//////////////////////////////////////////////////////
 
 function roundUI(n,p){
   return `
@@ -63,9 +71,10 @@ function closeForm(){
   document.getElementById("formContainer").innerHTML="";
 }
 
-//
-// 💾 SAVE + AUTO MINIMIZE
-//
+//////////////////////////////////////////////////////
+// 💾 SAVE PLAYER
+//////////////////////////////////////////////////////
+
 function savePlayer(index){
   const f = document.getElementById("formContainer");
 
@@ -85,21 +94,19 @@ function savePlayer(index){
 
   if(!player.name) return alert("Enter name");
 
-  if(index!=null) players[index]=player;
+  if(index != null) players[index] = player;
   else players.push(player);
 
   save();
 
-  // ✨ MINIMIZE FEEDBACK
-  f.innerHTML = `<div class="card">✅ Saved!</div>`;
-  setTimeout(()=>closeForm(),800);
-
+  closeForm();
   renderAll();
 }
 
-//
-// 📦 MAIN RENDER
-//
+//////////////////////////////////////////////////////
+// 📦 PLAYERS
+//////////////////////////////////////////////////////
+
 function renderPlayers(){
   const c = document.getElementById("playersContainer");
   c.innerHTML="";
@@ -127,23 +134,25 @@ function renderPlayers(){
 }
 
 function removePlayer(i){
-  if(!confirm("Remove?")) return;
+  if(!confirm("Remove player?")) return;
   players.splice(i,1);
   save();
   renderAll();
 }
 
-//
+//////////////////////////////////////////////////////
 // 💰 POT
-//
+//////////////////////////////////////////////////////
+
 function updatePot(){
   document.getElementById("pot").innerText =
     players.reduce((a,p)=>a+(p.bet||0),0);
 }
 
-//
+//////////////////////////////////////////////////////
 // 🏆 SCORES
-//
+//////////////////////////////////////////////////////
+
 function updateScores(){
   const table = document.getElementById("scoreTable");
 
@@ -166,49 +175,53 @@ function updateScores(){
       </tr>
     `;
   });
+
+  document.getElementById("winnerPot").innerText =
+    document.getElementById("pot").innerText;
 }
 
-//
-// 🎯 CLICKABLE CHECKER (NEW UPGRADE)
-//
+//////////////////////////////////////////////////////
+// 🎯 CLICKABLE CHECKER (GROUPED)
+//////////////////////////////////////////////////////
+
 function renderCheckerPanel(){
   const el = document.getElementById("checkerPanel");
 
-  let rounds = [new Map(),new Map(),new Map(),new Map()];
+  let rounds=[new Map(),new Map(),new Map(),new Map()];
 
   players.forEach(p=>{
     p.rounds.forEach((r,i)=>{
       r.forEach(g=>{
-        if(!g) return;
-        if(!rounds[i].has(g)) rounds[i].set(g,{yes:0,no:0});
+        if(g && !rounds[i].has(g)) rounds[i].set(g,true);
       });
     });
   });
 
-  let html = `<div class="card"><h2>🎯 Checker Panel</h2>`;
+  let html=`<div class="card"><h2>🎯 Checker Panel</h2>`;
 
   rounds.forEach((map,i)=>{
-    html += `<h3>Round ${i+1}</h3>`;
+    html+=`<h3>Round ${i+1}</h3>`;
 
-    map.forEach((v,name)=>{
-      html += `
+    map.forEach((_,name)=>{
+      html+=`
         <div class="guess">
           <span>${name}</span>
 
-          <button onclick="checkMark('${name}',${i},1)">✔</button>
-          <button onclick="checkMark('${name}',${i},-1)">✖</button>
+          <button onclick="mark('${name}',${i},1)">✔</button>
+          <button onclick="mark('${name}',${i},-1)">✖</button>
         </div>
       `;
     });
   });
 
-  el.innerHTML = html+"</div>";
+  el.innerHTML=html+"</div>";
 }
 
-//
-// ✔✖ CHECK MARK (NEW)
-//
-function checkMark(value,round,state){
+//////////////////////////////////////////////////////
+// ✔✖ MARK SYSTEM
+//////////////////////////////////////////////////////
+
+function mark(value,round,state){
   players.forEach(p=>{
     p.rounds.forEach((r,i)=>{
       r.forEach((g,gi)=>{
@@ -223,14 +236,24 @@ function checkMark(value,round,state){
   renderAll();
 }
 
-//
+//////////////////////////////////////////////////////
 // 🔄 MASTER RENDER
-//
+//////////////////////////////////////////////////////
+
 function renderAll(){
   renderPlayers();
   updatePot();
   updateScores();
   renderCheckerPanel();
+}
+
+//////////////////////////////////////////////////////
+// 🔄 RESET
+//////////////////////////////////////////////////////
+
+function resetGame(){
+  localStorage.removeItem("players");
+  location.reload();
 }
 
 // 🚀 INIT
